@@ -1,3 +1,9 @@
+PLEASE NOTE:
+This arbor version modified, it fixes:
+  When the graph only has one node it does not jiggle,
+  It is possible for mouseevents to register on multiple particle systems,
+  Start and stop of physics  
+
 arbor.js
 --------
 
