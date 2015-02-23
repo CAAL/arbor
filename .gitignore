@@ -1,0 +1,4 @@
+build/.o
+build/.yui
+build/yui
+lib/*.js
