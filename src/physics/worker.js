@@ -5,8 +5,8 @@
 // Kernel object can deal with
 //
 importScripts('atoms.js');
-importScripts('barnes-hut.js');
-importScripts('physics.js');
+importScripts('barnes-hut.js');  
+importScripts('physics.js');  
 // alias over the missing jquery utils so we can run in a worker
 $ = {
   each:function(obj, callback){
@@ -33,7 +33,7 @@ $ = {
   inArray:function(elt, arr){
     for (var i=0, j=arr.length; i<j; i++) if (arr[i]===elt) return i;
     return -1
-  }
+  }    
 }
 // endalias
 var PhysicsWorker = function(){
@@ -41,18 +41,17 @@ var PhysicsWorker = function(){
   var _physics = null
   var _physicsInterval = null
   var _lastTick = null
-
+  _paused = null
+  
   var times = []
   var last = new Date().valueOf()
-
-  _paused = null
-  var that = {
+  
+  var that = {  
     init:function(param){
       that.timeout(param.timeout)
       _physics = Physics(param.dt, param.stiffness, param.repulsion, param.friction, that.tock)
       return that
     },
-
     timeout:function(newTimeout){
       if (newTimeout!=_timeout){
         _timeout = newTimeout
@@ -65,7 +64,8 @@ var PhysicsWorker = function(){
 
     go:function(){
       if (_physicsInterval!==null) return
-        // postMessage('starting')
+
+      // postMessage('starting')
       _lastTick=null
       _physicsInterval = setInterval(that.tick, _timeout)
     },
@@ -76,10 +76,9 @@ var PhysicsWorker = function(){
       _physicsInterval = null;
       // postMessage('stopping')
     },
-
     tick:function(){
       // iterate the system
-      _physics.tick()
+      _physics.tick()    
 
       // but stop the simulation when energy of the system goes below a threshold
       var sysEnergy = _physics.systemEnergy()
@@ -93,7 +92,6 @@ var PhysicsWorker = function(){
       }else{
         _lastTick = null
       }
-
     },
 
     tock:function(sysData){
@@ -121,7 +119,7 @@ var PhysicsWorker = function(){
       var epoch = _physics._update(changes)
     }
   }
-
+  
   return that
 }
 
@@ -149,20 +147,20 @@ onmessage = function(e){
       physics.update(e.data.changes)
       physics.go()
       break
-
+      
     case "start":
       physics.go()
       break
-
+      
     case "stop":
       physics.stop()
       break
-
+      
     case "sys":
       var param = e.data.param || {}
       if (!isNaN(param.timeout)) physics.timeout(param.timeout)
       physics.modifyPhysics(param)
       physics.go()
       break
-    }
+    }  
 }
